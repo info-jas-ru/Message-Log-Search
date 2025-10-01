@@ -6,7 +6,7 @@
 - Mojolicious v7.25+
 
 ## Запуск и установка
-Склонировать приложение git@github.com:info-jas-ru/Message-Log-Search.git
+Склонировать приложение [git@github.com:info-jas-ru/Message-Log-Search.git](https://github.com/info-jas-ru/Message-Log-Search.git)
 
 ### Установка
 perl bin/init_database.pl
