@@ -1,0 +1,94 @@
+% layout 'default';
+% title 'Поиск логов по адресу';
+
+<div class="search-container">
+    <h2>Поиск логов по адресу получателя</h2>
+    
+    <form action="<%= url_for('search') %>" method="post" class="search-form">
+        <div class="form-group">
+            <label for="address">Адрес получателя:</label>
+            <input type="text" 
+                   id="address" 
+                   name="address" 
+                   value="<%= $address %>" 
+                   placeholder="Введите email или часть адреса..."
+                   class="form-control"
+                   required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Найти</button>
+    </form>
+    
+    % if ($search_performed) {
+        <div class="search-results">
+            % if (defined $error && $error) {
+                <div class="alert alert-error">
+                    <%= $error %>
+                </div>
+            % }
+            
+            % if (scalar @$results > 0) {
+                <div class="results-header">
+                    <h3>Результаты поиска для "<%= $address %>"</h3>
+                    <p>Найдено записей: <%= $total_found %></p>
+                    % if ($has_more) {
+                        <div class="alert alert-warning">
+                            Показаны первые <%= $limit %> записей. Найдено больше <%= $limit %> записей - уточните критерии поиска.
+                        </div>
+                    % }
+                </div>
+                
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Время лога</th>
+                            <th>Время сообщения</th>
+                            <th>ID сообщения</th>
+                            <th>Запись лога</th>
+                            <th>Адрес</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        % foreach my $log (@$results) {
+                        <tr>
+                            <td class="timestamp" title="<%= $log->{log_created} %>">
+                                %== $log->{log_created_formatted}
+                            </td>
+                            <td class="timestamp" title="<%= $log->{msg_created} %>">
+                                %== $log->{msg_created_formatted}
+                            </td>
+                            <td class="message-id">
+                                <code><%= $log->{int_id} %></code>
+                            </td>
+                            <td class="log-message">
+                                <%= $log->{log_message} %>
+                                % if ($log->{msg_content}) {
+                                    <div class="message-content">
+                                        <small>Сообщение: <%= $log->{msg_content} %></small>
+                                    </div>
+                                % }
+                            </td>
+                            <td class="address">
+                                <strong><%= $log->{address} %></strong>
+                            </td>
+                            <td class="status">
+                                <span class="<%= $log->{status_class} %>">
+                                    <%= $log->{status_text} %>
+                                    % if (defined $log->{status}) {
+                                        (<%= $log->{status} %>)
+                                    % }
+                                </span>
+                            </td>
+                        </tr>
+                        % }
+                    </tbody>
+                </table>
+            % } elsif ($search_performed && !(defined $error && $error)) {
+                <div class="alert alert-info">
+                    По запросу "<%= $address %>" ничего не найдено.
+                </div>
+            % }
+        </div>
+    % }
+</div>
